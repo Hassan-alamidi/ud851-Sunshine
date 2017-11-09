@@ -22,6 +22,9 @@ import android.widget.TextView;
 
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.utilities.NetworkUtils;
+import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -53,24 +56,33 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    protected class networkRequests extends AsyncTask<String,Void,String>{
+    protected class networkRequests extends AsyncTask<String,Void,String[]>{
 
         @Override
-        protected String doInBackground(String... details) {
+        protected String[] doInBackground(String... details) {
             String result = null;
+
             try {
                 URL url = NetworkUtils.buildUrl(details[0]);
                 result = NetworkUtils.getResponseFromHttpUrl(url);
+                String[] resultArr = OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this,result);
+                return resultArr;
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            return result == null ? "Failed to obtain weather": result;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(String result){
-            mWeatherTextView.setText(result);
+        protected void onPostExecute(String[] results){
+            if(results != null){
+                for(String result: results){
+                    mWeatherTextView.append(result + "\n");
+                }
+            }
         }
     }
 }
