@@ -219,10 +219,24 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapterOn
             mForecastAdapter.setWeatherData(null);
             loadWeatherData();
             return true;
+        }else if(id == R.id.open_map){
+            openMap();
         }
 
-        // TODO (2) Launch the map when the map menu item is clicked
-
         return super.onOptionsItemSelected(item);
+    }
+
+    void openMap(){
+        String address = "Dublin, Ireland";
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("geo").path("0,0").appendQueryParameter("q",address);
+        Uri compiledAddress = builder.build();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(compiledAddress);
+
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivity(intent);
+        }
     }
 }
